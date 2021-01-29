@@ -1,0 +1,365 @@
+#set seed 
+set.seed(676481256) # specify start position
+rnorm(1)
+
+#set seed  - same result
+set.seed(676481256) # specify the same start position
+rnorm(1)
+
+#Estimating a probability via simulation - using actual density 
+#function of normal ditn
+(true_val <- pnorm(q = 1, mean = 0, sd = 1))
+
+
+#estimate this value using 100 realisations
+#random sampling from normal distribution
+normal_realisations <- rnorm(100, mean = 0, sd = 1)
+(proportion_less_than_1 <- sum(normal_realisations <= 1)) / 100
+#with seed 
+set.seed(734722)
+normal_realisations <- rnorm(100, mean = 0, sd = 1)
+(proportion_less_than_1 <- sum(normal_realisations <= 1)) / 100
+normal_realisations <- rnorm(100, mean = 0, sd = 1)
+(proportion_less_than_1 <- sum(normal_realisations <= 1)) / 100
+normal_realisations <- rnorm(100, mean = 0, sd = 1)
+(proportion_less_than_1 <- sum(normal_realisations <= 1)) / 100
+
+
+#how many within-set simulations?
+calculate_norm_prob <- function(num_per_set){
+  normal_realisations <- rnorm(n = num_per_set, mean = 0, sd = 1)
+  sum(normal_realisations <= 1) / num_per_set
+}
+
+#confidence intervals
+library(MASS)
+set.seed(564564654)
+probability_estimates <- replicate(n = 5000, calculate_norm_prob(num_per_set = 100))
+quantile(probability_estimates, probs = c(0.025, 0.975)) # 2.5th and 97.5th percentile
+
+#histograms
+truehist(probability_estimates)
+abline(v = true_val, col = 2, lwd = 2)
+
+#increasing the number of within set simulations
+
+#how many of our destimates give 0.84 value to 2 dp
+sum(probability_estimates < 0.845 & probability_estimates >= 0.835 )/5000
+
+
+
+##above u get 5000 numbers right, then u take 100 of them.
+#it's like 100 of 5000 diff samples
+
+#HOW MANY SETS OF REALISATIONS
+#exercises 5a
+# The true value is
+(true_val <- ppois(5, lambda = 4) - ppois(0, lambda = 4))
+
+#Write a function to sample n within-set realisations of X and calculate the proportion of 
+#realisations between 1 and 5 inclusive.
+calculate_prop_in_poisson_sim <- function(n){
+  Poisson_realisations <- rpois(n = n, lambda = 4)
+  sum(Poisson_realisations >= 1 & Poisson_realisations <= 5) / n
+}
+
+
+#question 2 
+
+set.seed(544456456)
+par(mfrow = c(2,2)) # set up a 2 by 2 grid to plot the histograms in
+m <- 1000 # specify the number of sets of realisations
+xlimits <- c(0.3, 1.1)
+
+
+
+###10 
+pr_ests10 <- replicate(m, calculate_prop_in_poisson_sim(n = 10)) # repeat m times
+q10 <- quantile(pr_ests10, probs = c(0.025, 0.975))
+truehist(pr_ests10, xlim = xlimits, main ="set size = 10", ylab = "density",
+         xlab = "probability estimate") 
+# very high variation, negatively skewed distribution
+
+
+##100
+
+pr_ests100 <- replicate(m, calculate_prop_in_poisson_sim(n = 100))
+q100 <- quantile(pr_ests100, probs = c(0.025, 0.975))
+truehist(pr_ests100, xlim = xlimits, main ="set size = 100", ylab = "density",
+         xlab = "probability estimate") 
+# reduced variation, skew reduced 
+
+
+##1000
+
+pr_ests1000 <- replicate(m, calculate_prop_in_poisson_sim(n = 1000))
+q1000 <- quantile(pr_ests1000, probs = c(0.025, 0.975))
+truehist(pr_ests1000, xlim = xlimits, main ="set size = 1000", ylab = "density",
+         xlab = "probability estimate") 
+# looking more normal in shape, variance reduced further
+
+
+###10000
+pr_ests10000 <- replicate(m, calculate_prop_in_poisson_sim(n = 10000))
+q10000 <- quantile(pr_ests10000, probs = c(0.025, 0.975))
+truehist(pr_ests10000, xlim = xlimits, main ="set size = 10000", ylab = "density",
+         xlab = "probability estimate")  
+
+
+
+#variance reduced even further
+# variance reduced even further
+
+library(magrittr)
+library(kableExtra)
+perc_by_n <- rbind(q10, q100, q1000, q10000)
+perc_by_n <- cbind (10 ^ seq(1, 4), perc_by_n, rep(true_val, 4))
+colnames(perc_by_n) <- c("Within-set size", "2.5th percentile", "97.5th percentile", "True value")
+rownames(perc_by_n) <- NULL
+perc_by_n %>%
+  kbl() %>%
+  kable_material(c("striped"))
+
+
+#changing scale of above histograms
+truehist(pr_ests10000, main ="set size = 10000", ylab = "density",
+         xlab = "probability estimate")
+abline(v = true_val, col = 2, lwd = 2)
+
+
+
+#question 3, m=5, but same as above
+
+
+set.seed(7754456)
+par(mfrow = c(2,2)) # set up a 2 by 2 grid to plot the histograms in
+m <- 5 # specify the number of sets of realisations
+xlimits <- c(0.3, 1.1)
+
+pr_ests10 <- replicate(m, calculate_prop_in_poisson_sim(n = 10)) # repeat m times
+q10 <- quantile(pr_ests10, probs = c(0.025, 0.975))
+truehist(pr_ests10, xlim = xlimits, main ="set size = 10", ylab = "density",
+         xlab = "probability estimate") 
+
+pr_ests100 <- replicate(m, calculate_prop_in_poisson_sim(n = 100))
+q100 <- quantile(pr_ests100, probs = c(0.025, 0.975))
+truehist(pr_ests100, xlim = xlimits, main ="set size = 100", ylab = "density",
+         xlab = "probability estimate") 
+
+pr_ests1000 <- replicate(m, calculate_prop_in_poisson_sim(n = 1000))
+q1000 <- quantile(pr_ests1000, probs = c(0.025, 0.975))
+truehist(pr_ests1000, xlim = xlimits, main ="set size = 1000", ylab = "density",
+         xlab = "probability estimate") 
+
+pr_ests10000 <- replicate(m, calculate_prop_in_poisson_sim(n = 10000))
+q10000 <- quantile(pr_ests10000, probs = c(0.025, 0.975))
+truehist(pr_ests10000, xlim = xlimits, main ="set size = 10000", ylab = "density",
+         xlab = "probability estimate")  
+
+
+##MONTECARLO INTEGRATION
+
+sqrt(pi) * ( pnorm(1, sd = 1/sqrt(2)) - pnorm(-1, sd = 1/sqrt(2)) )
+
+calc_int <- function(n){
+  x <- runif(n, min = -1, max = 1)
+  mean(2 * exp(-1 * x ^ 2))
+}
+calc_int(1000)
+
+
+
+#EXERCISES  B
+# Suppose X1,…,X10 are iid U[0,1] random variables. Use Monte Carlo methods to find the distribution of
+# R(X)=maxi{Xi}−mini{Xi}.
+# What is P(R(X)>0.99)?
+
+# We will graphically represent the probability distribution by generating a histogram. We start by creating a function to simulate the random variable R.
+
+simr <- function(){
+  x <- runif(10) # simulate 10 U[0,1] rvs
+  max(x) - min(x)
+}
+
+
+
+# simR will generate one realisations of R. Now let's simulate $10^6$ realisations of R
+
+rvals <- replicate(10 ^ 6, simr())
+
+
+# We now just need to draw the histogram of these values. I've also drawn the kernel density estimate of the probability density function over the top (this is essentially a smoothed histogram).
+
+library(MASS)
+truehist(rvals, col = 0, xlab = 'R', ylab = 'Density')
+lines(density(rvals), col = 2)
+
+# To find Pr(R(X) > 0.99) we just count the proportion of the samples that are above 0.99.
+
+sum(rvals > 0.99) / 10 ^ 6
+
+#QUESTION 2
+# Let's start by letting $g(x)$ be the pdf of a $U[0,10]$ random variable. Then, h(x) = 10/(1+x^2), and we can estimate this in R using
+
+x <- runif(10 ^ 6, 0, 10)
+hx <- 10 / (1 + x ^ 2)
+mean(hx)
+
+# Lets compare this with a numerical estimate using the 'integrate' function:
+integrate(function(x) 1 / (1 + x ^ 2), lower = 0, upper = 10)
+
+
+# An alternative choice for g would be the Cauchy distribution g(x) = 1\(pi*(1+x^2)) for any real x 
+# Then h(x) = pi * I[0 <= x <= 10]
+
+x <- rcauchy(10 ^ 6)
+hx <- pi * (0 < x & x < 10)
+mean(hx)
+
+# Better still, we could let g(x) = 2/(pi*(1+x^2)) where x is a positive real number (called the half cauchy)
+
+x <- abs(rcauchy(10 ^ 6))
+hx <- pi* (0 < x & x < 10) / 2
+mean(hx)
+
+
+# We'll find a 95% CI for the half cauchy integral approximation. 
+# We can estimate the variance of  h(X_i) as
+var(hx)
+
+
+# giving a 95\% CI of
+cat("(",mean(hx) - qnorm(0.975) * sqrt(var(hx) / 10 ^ 3), ",",
+    mean(hx) + qnorm(0.975) * sqrt(var(hx) / 10 ^ 3), ")")
+
+
+
+# which may or may not contain the true value of the integral (1.4711) depending on the set of realisations you happen to simulate. Note that we could have calculated a 95% CI using Monte Carlo sampling, although this begins to get computationally expensive.
+
+ihat <- function(){
+  x <- abs(rcauchy(10 ^ 6))
+  hx <- pi* (0 < x & x < 10) / 2
+  return(mean(hx))
+}
+ihat_vals <- replicate(1000, ihat())
+quantile(ihat_vals, c(0.025, 0.975))
+
+
+
+#Estimate both of these integrals using Monte Carlo methods (using a suitable density g(.)). For I1 show that the root mean square error of your estimator scales as O(n−1/2). To do this, you will need to repeat the analysis multiple times for a range of values of n (i.e., for n=10,50,100,500,1000 estimate the integral 100 times and calculate the standard error).
+
+# We can estimate both using random samples X ~ U[0,1]. 
+# For $I_1$, we can calculate this analytically:
+
+(I1_true <- (pnorm(1,0,1/sqrt(2))-pnorm(0,0,1/sqrt(2)))*sqrt(pi))
+
+
+# A Monte Carlo estimate of $I_1$ using samples from a standard uniform would be:
+
+f1 <- function(x){exp(-x^2)}
+X <- runif(10^7)
+(I1_hat <- mean(f1(X)))
+
+
+# Similarly, a Monte Carlo estimate of $I_2$ using samples from a standard uniform would be:
+
+f2 <- function(x){
+  (cos(50*x)+sin(20*x))^2
+}
+
+X <- runif(10^7)
+(I2_hat <- mean(f2(X)))
+
+
+
+# For a given value of n we can estimate the error in our estimator by repeating the Monte Carlo process m=1000 times. Because we know the true value of the integral, we can calculate the exact error of each of the 100 estimates. Then we take the root mean squared error of these 1000 error estimates.
+
+find_error <- function(n){
+  x <- runif(n)
+  mc_est <- mean(f1(x))
+  mc_est - I1_true
+}
+find_rmse <- function(m, n){
+  errs <- replicate(m, find_error(n))
+  sqrt(mean(errs ^ 2))  
+}
+
+# try with m = 100 and n=10
+find_rmse(m = 1000, n = 10)
+
+
+
+# To show how the RMSE scales as n varies we use n=10,50,100,500,1000 within-set realisations and m=100 sets of realisations. 
+
+# I've plotted these here on a log-log plot. The line is the theoretical line showing how the RMSE should decay with $n$, i.e.,  with the slope set to -1/2. The intercept is the variance of $exp(-X^2)$.
+
+nvals <- c(10,50,100,500,1000)
+rmse <- vector("numeric", length = 5)
+rmse[1] <- find_rmse(m = 1000, n = 10)
+rmse[2] <- find_rmse(m = 1000, n = 50)
+rmse[3] <- find_rmse(m = 1000, n = 100)
+rmse[4] <- find_rmse(m = 1000, n = 500)
+rmse[5] <- find_rmse(m = 1000, n = 1000)
+
+plot(nvals, rmse, log ='xy', col = 2, xlab = "log(n)", ylab = "log(RMSE)")
+log_intercept <- log10(sd(f1(runif(1000))))
+abline(a = log_intercept, b = -0.5, col = 2)
+
+
+## Let's now look at the mid-ordinate rule with k rectangles.
+
+mid_ord_value <- function(k, fun_name){
+  h <- 1/k
+  x <- (1:k - 0.5) * h
+  sum(fun_name(x) * h)
+} 
+mid_ord_value(k = 100, fun_name = f1) # approx area of I1 using mid-ordinate rule
+
+
+# We can also see how this error scales with $n$ for I1.
+nvals <- c(5, 10, 20, 50, 100, 200)
+error1 <- vector("numeric", 6)
+error1[1] <- abs(mid_ord_value(k = nvals[1], fun_name = f1) - I1_true)
+error1[2] <- abs(mid_ord_value(k = nvals[2], fun_name = f1) - I1_true)
+error1[3] <- abs(mid_ord_value(k = nvals[3], fun_name = f1) - I1_true)
+error1[4] <- abs(mid_ord_value(k = nvals[4], fun_name = f1) - I1_true)
+error1[5] <- abs(mid_ord_value(k = nvals[5], fun_name = f1) - I1_true)
+error1[6] <- abs(mid_ord_value(k = nvals[6], fun_name = f1) - I1_true)
+
+# Lets plot these errors against n on a log scale
+
+plot(nvals, error1, log='xy', col=2, xlab = "log(n)", ylab = "log(error)")
+# calculate intercept of best fit line using smiple linear regression
+(bst_grad <- lm(log10(error1) ~ log10(nvals)))
+
+
+intercept <- bst_grad$coefficients[1]
+cat("gradient estiamte is ", bst_grad$coefficients[2])
+
+
+abline(a = intercept, b = -2, col = 2)
+
+
+# so for I1 the error is proportional to n^{-2}
+
+# Let's do the same for $I_2$. We haven't used the analytical solution here, but instead the Monte Carlo estimate with $n=1e+08$.
+
+x <- runif(10^8)
+I2_hat <- mean(f2(x))
+
+nvals <- c(5, 10, 20, 50, 100, 200)
+error2 <- vector("numeric", 6)
+error2[1] <- abs(mid_ord_value(k = nvals[1], fun_name = f2) - I2_hat)
+error2[2] <- abs(mid_ord_value(k = nvals[2], fun_name = f2) - I2_hat)
+error2[3] <- abs(mid_ord_value(k = nvals[3], fun_name = f2) - I2_hat)
+error2[4] <- abs(mid_ord_value(k = nvals[4], fun_name = f2) - I2_hat)
+error2[5] <- abs(mid_ord_value(k = nvals[5], fun_name = f2) - I2_hat)
+error2[6] <- abs(mid_ord_value(k = nvals[6], fun_name = f2) - I2_hat)
+
+# Lets plot these errors against n on a log scale
+plot(nvals, error2, log='xy', col=2, xlab = "log(n)", ylab = "log(error)")
+(bst_grad <- lm(log10(error2) ~ log10(nvals)))
+
+
+#abline(a = bst_grad$coefficients[1], b = bst_grad$coefficients[2])
+abline(bst_grad)

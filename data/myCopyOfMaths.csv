@@ -1,0 +1,71 @@
+"country","continent","score","gdp","gini","homework","start.age"
+"Albania","Europe",413,4147,29,5.1,6
+"Algeria","Africa",360,3844,27.6,NA,6
+"Argentina","South America",409,12449,42.7,3.7,6
+"Australia","Oceanea",494,49928,34.7,6,5
+"Austria","Europe",497,44177,30.5,4.5,6
+"B-S-J-G (China)","Asia",531,8123,42.2,13.8,6
+"Belgium","Europe",507,41096,28.1,5.5,6
+"Brazil","South America",377,8650,51.3,3.3,6
+"Bulgaria","Europe",441,7351,37.4,5.6,7
+"Canada","North America",516,42158,34,5.5,6
+"Chile","South America",423,13793,47.7,3.5,6
+"Colombia","South America",390,5806,51.1,5.3,6
+"Costa Rica","North America",400,11825,48.2,3.5,6
+"Croatia","Europe",464,12091,32.2,5.9,7
+"Cyprus","Europe",437,23324,35.6,3.8,6
+"Czech Republic","Europe",492,18267,25.9,3.1,6
+"Denmark","Europe",511,53418,28.5,4.3,6
+"Dominican Republic","North America",328,6722,44.9,NA,6
+"Estonia","Europe",520,17575,34.6,6.9,7
+"Finland","Europe",511,43090,26.8,2.8,7
+"France","Europe",493,36855,32.3,5.1,6
+"Georgia","Europe",404,3854,38.5,NA,6
+"Germany","Europe",506,41936,31.4,4.7,6
+"Greece","Europe",454,18104,35.8,5.3,6
+"Hong Kong SAR, China","Asia",548,43681,NA,6,6
+"Hungary","Europe",477,12665,30.9,6.2,7
+"Iceland","Europe",488,59977,25.6,4.1,6
+"Indonesia","Asia",386,3570,39.5,4.9,7
+"Ireland","Europe",504,61606,31.9,7.3,5
+"Israel","Asia",470,37293,41.4,4.6,6
+"Italy","Europe",490,30527,34.7,8.7,6
+"Japan","Asia",532,38894,32.1,3.8,6
+"Jordan","Asia",380,4088,33.7,4.2,6
+"Kazakhstan","Europe",460,7510,26.5,8.8,7
+"Korea, Rep.","Asia",524,27539,31.6,2.9,6
+"Latvia","Europe",482,14118,35.1,NA,7
+"Lebanon","Asia",396,7914,31.8,3.3,6
+"Lithuania","Europe",478,14880,37.7,6.7,7
+"Luxembourg","Europe",486,102831,31.2,4.6,6
+"Macao SAR, China","Asia",544,73187,NA,5.9,6
+"Macedonia, FYR","Europe",371,5237,35.6,NA,6
+"Malaysia","Asia",446,9503,46.3,4.8,6
+"Malta","Europe",479,25058,NA,NA,5
+"Mexico","North America",408,8201,48.2,5.2,6
+"Moldova","Europe",420,1900,27,NA,7
+"Montenegro","Europe",418,6701,31.9,4.3,6
+"Netherlands","Europe",512,45295,28.6,5.8,6
+"New Zealand","Oceanea",495,39427,NA,4.2,5
+"Norway","Europe",502,70812,26.8,4.7,6
+"Peru","South America",387,6046,44.3,5.5,6
+"Poland","Europe",504,12372,32.1,6.6,7
+"Portugal","Europe",492,19813,35.6,3.8,6
+"Qatar","Asia",402,59331,NA,4.3,6
+"Romania","Europe",444,9474,27.5,7.3,6
+"Russian Federation","Europe",494,8748,37.7,9.7,7
+"Singapore","Asia",564,52961,NA,9.4,6
+"Slovak Republic","Europe",475,16496,26.1,3.2,6
+"Slovenia","Europe",510,21305,25.7,3.7,6
+"Spain","Europe",486,26528,36,6.5,6
+"Sweden","Europe",494,51600,27.2,3.6,7
+"Switzerland","Europe",521,78813,32.5,4,7
+"Thailand","Asia",415,5908,37.8,5.6,6
+"Trinidad and Tobago","North America",417,15377,40.3,NA,5
+"Tunisia","Africa",367,3689,35.8,3.5,6
+"Turkey","Europe",420,10788,41.2,4.2,6
+"United Arab Emirates","Asia",427,37622,NA,6.2,6
+"United Kingdom","Europe",492,39899,34.1,4.9,5
+"United States","North America",470,57467,41,6.1,6
+"Uruguay","South America",418,15221,41.7,4.7,6
+"Vietnam","Asia",495,2186,34.8,5.8,6

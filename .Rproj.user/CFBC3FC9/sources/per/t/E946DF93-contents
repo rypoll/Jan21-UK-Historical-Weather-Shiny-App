@@ -1,0 +1,608 @@
+#CHAPTER 1 ####
+
+#Declare X 
+x <- 12
+# Declare y
+y <- x ^ 2
+sum(4, 7)
+help(sum)
+
+#save stuff
+#save(x, y, file = "C:/Project1/mydat.Rdata")
+
+# plot probability density function of standard normal
+x <- seq(-3, 3, by = 0.01)
+y <- dnorm(x)
+plot(x,y, type="l" ,ylab = "Probability Density")
+
+#poisson question
+
+
+
+#the probability density at X=1 
+#(height of the curve) is given by 
+#dnorm(1, mean = 0, sd = 1) giving a value 0.241
+
+
+## question 7 
+dpois(7, 3)
+
+# question 8 - verify this num using pm
+
+pois_verify <- ((3^7) * exp(-3))/factorial(7)
+
+
+#question 9 plot poisson 3 
+x <- seq(0, 50, by = 0.001)
+y <- dpois(x, 3)
+plot(x,y, type="l" ,ylab = "Probability Density")
+
+
+##question 10
+
+normal_quantile <- qnorm(0.4, mean=0, sd= 1)
+squared_value = normal_quantile ^2
+
+
+
+
+#vector 
+y <- c(2, 4, 6, 8, 10)
+
+#sequence of integers
+x <- 3:10
+
+
+
+#subset vectors
+x <- c(12, 14, 16, 18, 20)
+x[3]
+
+#eg
+x <- c(12, 14, 16, 18, 20)
+x[2:4]
+x[c(1, 3, 5)]
+x[-4]
+
+#replace elements of x 
+x[2] <- 0
+x
+
+#logical subsetting
+x <- c(12, 14, 16, 18, 20)
+x < 15
+x[x < 15]
+
+#character strings
+x <- c("Monday", "Tuesday", "Wednesday")
+x
+
+#facotrs, levels
+x <- factor(c("mild" ,"mild", "none", "severe"))
+x
+
+#exercise
+responses <- c("yes", "yes", "no")
+responses
+
+responses <- factor(c("yes", "yes", "no", "undecided"))
+
+
+#functions
+x <- 1:10
+mean(x)
+
+y <- c(5, 10, 6, 11, 7, 12)
+sort(y)
+
+sort(y, decreasing = TRUE)
+
+
+seq(from = 50, to = 100, length = 3)
+
+#help
+?sort
+
+#exercise
+sample(1:6, size = 1)
+
+
+#data frames
+head(mtcars)
+
+#extract var
+mtcars$cyl
+
+#extract complete row
+mtcars[2, ]
+
+#lists
+mylist <- list(a = 1:10, b = "Monday")
+names(mylist)
+
+#exercise
+head(morley)
+mean(morley$Speed)
+
+#making line space 
+sample(1:6, size = 6, replace = TRUE)
+
+sample(1:6,
+       size = 6,
+       replace = TRUE)
+
+##packages, 2 ways to use functions
+x <- 10:20
+
+#1 use ::
+
+zoo::rollmean(x, k = 4)
+
+#or load package then do it
+library(zoo)
+rollmean(x, k = 4)
+# 
+# 
+# If you're searching for a package to do something, one simple approach is to include 
+# "R CRAN" in your web search, e.g. you might search for R CRAN lasso if you were looking for
+# a package to implement the lasso. (CRAN is the main repository for R packages).
+# 
+# You could also try browsing the CRAN Task Views. These discuss some of the packages that are
+# available for particular topics (e.g Bayesian inference, machine learning, time series analysis etc.)
+
+
+#------------------------------------------------------------------------------------
+
+
+
+
+#functions
+dnorm(x = 2, mean = 3, sd = 2)
+
+#multi functions in same line
+log(exp(3))
+
+
+#set variable value
+x <- rbinom(n = 10, size = 5, prob = 0.2)
+x <- c(2, 4, 6)
+
+#<- versus =
+x <- seq(from = 1, to = 10, by = 3)
+
+#
+help
+
+#checkin values of objects you create
+x <- rbinom(n = 10, size = 5, prob = 0.2)
+
+#cant see value above, but if u add brakcets u can
+(x <- rbinom(n = 10, size = 5, prob = 0.2))
+
+#ex A
+#1
+pi
+#2 Use seq to create a vector called 
+#numbers containing the values 0, 1, 2, 3, 4.
+(numbers <- seq(from = 0, to = 4, by = 1))
+
+#3. What do you think numbers + 5 would return? Try it.
+numbers+5
+#4.Using what you observed in Question 3, what is the easiest 
+#way to create a vector containing the values of exp(j) for j=0,…,4.
+(numbers2 <- exp(seq(from = 0, to = 4, by = 1)))
+#5.Use R to calculate the sample variance of the numbers 1, 4, 7, 6.2 and 5.1
+y <- c(1,4,7,6.2,5.1)
+var(y)
+#6.Sample 100 realisations of a random variable with a 
+#standard normal distribution. Use the hist function to plot a histogram of these realisations with the frequency on the y axis.
+(x <- rnorm(n = 100, mean = 0, sd = 1))
+hist(x, freq=FALSE)
+#7.Plot the histogram in Question 6 but this time showing the probability density on the y axis (look at the help files for hist).
+hist(x, freq=FALSE)
+
+
+#MASKING FUNTIONS
+#specify where formula comes from
+library(dplyr)
+stats::filter()
+
+#Vectors
+
+#length of vector
+num1to4  <- seq(1, 4)
+length(num1to4)
+
+#creating vectors of integers
+1:10
+
+#can do vector arithmetic
+num1to4 +  2
+
+
+#recyclin
+other_nums <- c(13, 17, 23)
+length(other_nums)
+
+decr_seq <- seq(31, 20, by = -4)
+length(decr_seq)
+
+more_nums <- c(num1to4, other_nums, decr_seq)
+length(more_nums)
+
+#shorter vector extended and repeats from start
+num1to4 + more_nums
+
+
+#create empty vector
+numeric(6)
+#or
+rep(x = 0, times = 6)
+
+#missing values
+num1to4[12]
+
+rep(NA, 6)
+
+
+repeat_two <- rep(x = 2, times = 5)
+repeat_two[10] <- 50
+repeat_two
+
+#character vectors
+clrs <- c("red", "green", "blue")
+
+paste(c("A", "B"), 1:2, c("X", "Y"))
+
+paste(c("A", "B"), 1:2, c("X", "Y"), sep = "")
+
+#logical vectors
+a <- c(TRUE, FALSE, TRUE, FALSE, TRUE)
+
+b <- c(2, 1, 0, 1, 2)
+(comp1 <- b > 1)
+
+d <- 1:2
+(comp2 <- (b < d))
+
+#boolean operators
+a & comp1
+!a | comp1
+comp1 &  (!a | comp2)
+
+#find if any vecotr is true
+any(a)
+#all elements are true
+all(a)
+sum(a)
+
+#subsetting
+b <- c(1, -3, 6, 9, -13, 67)
+b[3]
+
+b[2:5]
+
+b[c(1, 3, 5)]
+
+#don't select stuff
+b[c(-1, -3)]
+
+a <- c(TRUE,  FALSE,  TRUE,  FALSE,  TRUE)
+y <- c(0, 0.5, 2, 3, 0, 0.8)
+b[a] # elements of b corresponding to the `TRUE` elements of 
+
+
+b[b > 0] # selects all the strictly positive elements of b
+
+b[y < 1] # selects elements of b corresponding to elements of y that are less than 1,
+#combine logical vectors
+b[(b > 0) & (y < 1)]
+
+b[b > 0 & y < 1]
+
+
+
+#exercises B----
+
+
+# Without running the code, predict what output each of the following lines of code would produce and which would give warnings. Check them in R:
+# 1:5 * 2:6 
+# 1:5 * 2:3
+# c(2, 5, 8, 3, 5, 9) > 3.5
+# c(2, 5, 8, 3, 5, 9) > c(3.5, 5.4)
+# c(2, 5, 8, 3, 5, 9)[c(2, 5, 8, 3, 5, 9) > 3.5]
+# c(2, 5, 8, 3, 5)[c(2, 5) > 3.5]
+# seq(1, 10)[1:10 > 3.4]
+
+
+#2
+# The built-in vectors letters and LETTERS consist of the lower and upper-case letters of the alphabet respectively (they are in the base library which is automatically loaded when RStudio is launched). Write some code using letters, LETTERS, seq and rep to produce the following
+# "a" "b" "a" "b" "a" "b" "a" "b"
+# 
+# "A" "A" "B" "B" "C" "C"
+# 
+# 2  4  6  8  2  4  6  8
+
+
+
+
+c(letters)[rep(1:2, times=4, each=1)]
+c(LETTERS)[rep(1:2, times=4, each=1)]
+seq(1,8)[rep(c(2,4,6,8), times=2, each=1)]
+
+#3
+#Without running the code, predict what rep(1:4, 1:4) will produce, then check the result.
+
+#4
+# Create the vector x consisting of the numbers 17.8, 0.8, 1.2, 11, 7, 0.006, 6.9, 5.3
+# 
+# Find the mean of x and subtract it from each element.
+# 
+# Display the square roots of the elements of x.
+# 
+# Display those elements of x that are larger than their square roots (by using subsetting).
+# 
+# Check the help file for the function round and use round to display the square roots of the elements rounded to 2 decimal places.
+# 
+# How much do the squares of the rounded roots differ from the original numbers?
+
+x <- c(17.8, 0.8, 1.2, 11, 7, 0.006, 6.9, 5.3)
+mean(x)
+
+x - mean(x)
+
+sqrt(x)
+
+x[x>sqrt(x)]
+
+round(sqrt(x), digits = 2)
+
+#5
+
+# Create two related vectors as follows
+# (x <- seq(-1, 1, by = 0.1))
+# ##  [1] -1.0 -0.9 -0.8 -0.7 -0.6 -0.5 -0.4 -0.3 -0.2 -0.1  0.0  0.1  0.2  0.3  0.4
+# ## [16]  0.5  0.6  0.7  0.8  0.9  1.0
+# (y <- x^2)
+# ##  [1] 1.00 0.81 0.64 0.49 0.36 0.25 0.16 0.09 0.04 0.01 0.00 0.01 0.04 0.09 0.16
+# ## [16] 0.25 0.36 0.49 0.64 0.81 1.00
+# Use subsetting ideas to select:
+#   
+#   the first and last elements in y;
+# 
+# elements in y that are bigger than the median of y;
+# 
+# elements in y corresponding to elements in x that are less than the mean of x.
+# 
+# The function is.na applied to a vector returns TRUE for each element that is NA and FALSE otherwise. Run each line of the following code to understand what it does.
+(integer_vector <- 1:10)
+(to_replace <- sample(1:10, 5))
+(some_missing <- integer_vector)
+(some_missing[to_replace] <- NA)
+
+
+(x <- seq(-1, 1, by = 0.1))
+(y <- x^2)
+
+y[c(1,21)]
+
+median(y)
+y[y>median(y)]
+
+y[x<mean(x)]
+
+#7 
+some_missing[!is.na(some_missing)] 
+
+#8
+length(some_missing[is.na(some_missing)]) ## calculate number of missings
+
+
+#Without running the code, say what each of the following return anmd then check your answers in R:
+!c(2, 5, 8, 3, 5, 9) < 5.3
+seq(1:6)[!c(2, 5, 8, 3, 5, 9) < 5.3] 
+seq(1:10)[!c(2, 5, 8, 3, 5, 9) < 5.3]
+seq(1, 10)[1:10 > 3.4 | 1:10 < 1.1]
+seq(1, 10)[!(1:10 > 3.4 | 1:10 < 1.1)]
+seq(1, 10)[1:10 > 3.4 & 1:10 < 7.5]
+seq(-5,8)[!seq(12, 27, by = 3)[c(-4,-8)] >= 20]
+
+#8 
+any(is.na(x)) #tells u if any missing vlas
+
+
+
+# Section 7 - 9, end of chapter 2 ----
+
+
+
+## secion 9 ----
+# Let
+# A=(1−321)andB=(345−203)
+# Calculate A×B on paper and check it in R.
+
+(a <- matrix(c(1, 2, -3, 1), nrow = 2, ncol = 2))
+(b <- matrix(c(3, 5, 0, 4, -2, 3), nrow = 2, ncol = 3))
+
+a %*% b
+
+
+#Predict what the following would return and check your answers in R
+
+A <- matrix(c(1, -3, 2, 1), nrow = 2)
+dim(A)
+A[1,]
+dim(A[1,])
+A[1,] + 5
+A[1, , drop = FALSE] + 5
+dim(A[1, , drop = FALSE] + 5)
+#Predict what the following returns and check it in R
+A <- matrix(c(1, -3, 2, 1, 4, 2), byrow = TRUE, nrow = 2)
+A %*% A
+A * A
+
+# Find at least three ways to extract the 2×2 matrix containing the 4 elements in the corners 
+# of a general 3×3 matrix. Try your code by randomly generating a 3×3 matrix containing integers
+# randomly sampled with replacement from the numbers 1,…,10 using the sample function. Try it for several randomly generated matrices.
+# 
+
+B <- matrix(sample(1:10, 6, replace=TRUE), nrow=3, ncol=3)
+
+B[1:2,1:2]
+
+
+f <- array(1:24, dim = c(3, 4, 2))
+#Use the help function to determine how R fills in elements of an array. Use this information to predict what the following would return a)
+
+f[1, 1, 2]
+f[14, 1, 2]
+f[1:2, 2:4, 1]
+#Consider a list defined by
+some_list <- list(1:4, matrix(1:4, nrow = 2), letters)
+#Note that letters is an R constant in the base library. Predict what the following R code returns and check the output in R:
+  
+  some_list[[1]]
+is.list(some_list[[1]])
+dim(some_list[[2]][2,])
+length(some_list[[2]][2,])
+some_list[1]
+is.list(some_list[1])
+dim(some_list[[2]][2, , drop = F])
+
+
+
+-------------------------------------------------------
+  
+  
+
+## CHAPTER 3 FUNCTIONS ----
+square_it <- function(x){
+  squared_value <- x ^ 2
+  return(squared_value)
+}
+
+
+
+square_it(x = 5)
+
+
+calculate_proportion <- function(data_vector, threshold){
+  more_than_threshold <- data_vector > threshold
+  values_in_interval <- data_vector[more_than_threshold]
+  proportion_in_interval <- length(values_in_interval) / length(data_vector)
+  return(proportion_in_interval)
+}
+
+
+
+some_data <- rnorm(100, mean = 6, sd = 3)
+calculate_proportion(data_vector = some_data, threshold = 2)
+
+##which 
+
+some_nums <- c(1, 3, 5, 7, 4, -2, 6)
+which(some_nums <0 )
+
+
+
+remove_low_values <- function(x, threshold){
+  low_values_indices <- which(x < threshold)
+  return(x[-low_values_indices])
+}
+
+remove_low_values(x = c(1, -6, 9, 224, 67, 3, 89), threshold = 50)
+
+#default varlues for function
+
+remove_low_values <- function(x, threshold = 0){
+  low_values_indices <- which(x < threshold)
+  return(x[-low_values_indices])
+}
+
+#writing quicker code for basic functions
+
+
+#this can be written 
+square_it <- function(x){
+  squared_value <- x ^ 2
+  return(squared_value)
+}
+
+#as this
+square_it <- function(x)  x ^ 2
+
+square_it(5)
+
+
+#automatic code formatting
+
+
+#remove_low_values_bad_format <- function(x, threshold)
+{
+  low_values_indices = which (x<threshold)
+  return(x[-low_values_indices] )}
+
+#above is badly formatted
+
+##apply this to tidy it
+tidy_source(source = "02 - Chapter 2.R")
+
+
+#8 extract function 
+
+x <- c(1, -6, 9, 224, 67, 3, 89)
+threshold = 50
+low_values_indices = which(x < threshold)
+x[-low_values_indices]
+
+## To do this highlight the last two lines 
+#in the script file and then click Code → 
+#Extract Function. Supply a function name 
+#(I used remove_low_values_via_extract) and you 
+#get the following
+
+x <- c(1, -6, 9, 224, 67, 3, 89)
+threshold = 50
+remove_low_values_via_extract <- function(x, threshold) {
+  low_values_indices = which(x < threshold)
+  x[-low_values_indices]
+}
+
+
+
+#9 returning multiple objects from a function
+find_intersection <- function(string1, string2){
+  in_common <- intersect(string1, string2)
+  return(in_common)
+}
+
+first_string <- c("oil", "inequality", "climate", "Brexit", "Trump", "data", "sanctions", "fear")
+second_string <- c("environment", "respect", "freedom", "data", "climate", "inclusion")
+find_intersection(string1 = first_string, string2 = second_string)
+
+#instead if we wanted to retuen 2 things
+find_unique_by_string <- function(string1, string2){
+  unique_in_first <- setdiff(string1, string2)
+  unique_in_second <- setdiff(string2, string1)
+  return(list(unique_in_first, unique_in_second))
+}
+
+unique_by_string <- find_unique_by_string(string1 = first_string, string2 = second_string)
+(unique_words_string1 <- unique_by_string[[1]])
+
+
+(unique_words_string2 <- unique_by_string[[2]])
+
+
+#10 using pipe with magrittr function
+(x <- seq(2, 10, by = 0.5))
+
+(nums_at_least_five <- remove_low_values(x, threshold = 5))
+
+mean(nums_at_least_five)
+# way to avoid intermediate step
+mean(remove_low_values(x, threshold = 5))
+
+#or can use pipe
+
+x %>% remove_low_values(threshold = 5) %>% mean()

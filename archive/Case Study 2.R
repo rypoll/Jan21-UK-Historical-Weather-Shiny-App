@@ -1,0 +1,658 @@
+library(tidyverse)
+library(MAS6005)
+library(dplyr)
+library(scales)
+library(ggplot2)
+library(plyr)
+#download data
+
+# download.file(url = "http://www.jeremy-oakley.staff.shef.ac.uk/mas113/maths.csv",
+#               destfile = "data/myCopyOfMaths.csv")
+
+
+#Since your clients are a consortium of schools in England, they have asked
+#you to focus on data from the following locations (which are the weather stations
+#closest to the schools in the consortium):
+#Sheffield, Yeovilton, Durham, Heathrow, Newton Rigg, Cambridge, Bradford, Oxford, Suttonbonington, Waddington, Manston, Shawbury and Ross-on-Wye.
+
+
+
+#create vector with all locations first
+
+
+locations <- c("Sheffield", 
+               "Yeovilton",
+               "Durham", 
+               "Heathrow",
+               "NewtonRigg",
+               "Cambridge",
+               "Bradford",
+               "Oxford",
+               "Suttonbonington",
+               "Waddington",
+               "Manston",
+               "Shawbury",
+              "RossonWye")
+
+
+
+
+## COMMENT THIS OUT DUE TO FACT ALREADY NOW DOWNLOAED AND ONLY NEED TO OPEN UP THE FILES NOW
+#  (filePaths <- paste0("data/", tolower(locations), "data.txt"))
+# #
+ # (dlPaths <- paste0("http://www.metoffice.gov.uk/pub/data/weather/uk/climate/stationdata/", tolower(locations), "data.txt"))
+#
+#
+#
+#
+#
+ # for(i in 1:length(locations)){
+ #   locations[i]
+ #   download.file(url = dlPaths[i],
+ #                 destfile = filePaths[i])
+ # }
+
+
+
+# Write high quality, well-commented R code to pre-process the text files that you have download, extracting the 
+# weather data into a list of data-frames (or tibbles), with one entry in the list per spatial location. Don’t rush
+# this task; there are a lot of oddities within the data (including symbols mixed in with the data) that must be resolved
+# before you will have usable datasets.
+  
+
+
+LocationData <- vector(mode = "list", length = length(locations))
+SpatialData <- vector(mode = "list", length = length(locations))
+
+
+(filePaths <- paste0("http://www.metoffice.gov.uk/pub/data/weather/uk/climate/stationdata/", tolower(locations), "data.txt"))
+
+for(i in 1:length(LocationData)){
+  data <- read_lines(filePaths[i],
+                              skip_empty_rows = TRUE)
+  
+  dataclean <- data  %>%
+    str_remove_all(pattern = "\\*") %>%
+    str_remove_all(pattern = "#") %>%
+    str_replace_all(pattern = "---",
+                    replacement = "NA") %>%
+    str_trim()
+  
+  header <- str_which(dataclean, pattern = "yyyy")
+  endLine <- length(dataclean)
+  spatline <- str_which(dataclean, pattern = "Location")
+  
+  LocationData[[i]] <- 
+    read_table2(dataclean[header:endLine])[-c(1), ] %>%
+      mutate(location = locations[i])
+  
+  #spatial data
+  SpatialData[[i]] <- 
+    paste(str_trim(dataclean[2]), locations[i], sep= " ")
+}
+
+
+#above loop gets all data, below is just stuff i am playin around with
+
+
+
+#combine all data
+
+test <- do.call(rbind, SpatialData)
+#this is misaligned but can still get location data for each region.
+test2 <- read_table2(test, col_names = FALSE)
+
+
+
+
+
+#replace missing locations in x11, this fixes above
+test2$X11[is.na(test2$X11)] <- test2$X10[is.na(test2$X11)]
+
+
+# # Extend your code so that it will produce an elegant plot of the variation in one of the weather variables,
+# # at a single location, over time. Choosing a variable that you fully understand, like maximum daily temperature: 
+# #   first plot all the of data (noting the cyclicity relating to winter and summer) and then plot the same variable
+# # for just one month each year (say maximum August temperature) so that any underlying, longer-term trends over time 
+# # will be more obvious. [You could try plotting some changes in summary statistics here too, of course, but those would
+#                        be very hard for primary age children to understand.]
+
+#for sheffield plot temperatues over time 
+# 
+# df <- as.data.frame(LocationData[1])
+# df$x <- paste(df$yyyy, "-", df$mm)
+# 
+# library(ggplot2)
+# # Basic line plot with points
+# ggplot(data=df[df$mm==6,], aes(x=x, y=tmax, group=1)) +
+#   geom_line()+
+#   geom_point() +
+#   #geom_smooth(method = "lm") +
+#   stat_smooth(aes(y=tmax), method = "lm", formula = y ~ x + I(x^20))
+
+
+#generalise the code
+#Generalise your code for the previous plots so that you can change the location and variable easily and thus explore
+#any aspect of the temporal variation in the data that you wish.
+
+
+#1 make big table of all tibbles
+alldatatib <- do.call(rbind, LocationData)
+all_df <- as.data.frame(alldatatib)
+
+all_df$x <- paste(all_df$yyyy, "-", all_df$mm)
+
+
+
+# ###this does not work, i cannnot do it. it's stupid
+# 
+# chart_stuff <- function(location, staty){
+#   print(location)
+#   df<- all_df[all_df$mm==6 & all_df$location==location,]
+#   staty
+#   
+#   location <- sym(location)
+#   staty <- sym(staty)
+#   
+#   ggplot(data=df, aes(x=x, y= !!staty, group=1)) +
+#     geom_line() +
+#     geom_point() +
+#     geom_smooth(method = "lm") +
+#     stat_smooth(aes(y=!!staty), method = "lm", formula = y ~ x + I(x^20))
+#   
+# }
+# 
+# 
+# 
+# chart_stuff(location = "Sheffield", staty = 'tmax')
+# # 
+# # 
+# # As you run this code, you may begin to notice gaps in some of your plots. These are the missing values that we know 
+# # are there (remember they were mentioned in the header of the text files). Have a think what you might do about these
+# # (using the guidance in the notes in section 17) and amend your code accordingly.
+# 
+# 
+# chart_stuffimp <- function(location, staty){
+#   print(location)
+#   df<- all_df[all_df$mm==6 & all_df$location==location,]
+#   staty
+#   
+#   location <- sym(location)
+#   staty <- sym(staty)
+#   z <- as.numeric(df[[staty]])
+#   imputeTS::ggplot_na_imputations(z,
+#                                   imputeTS::na_kalman(z))
+#   
+# }
+# 
+# 
+# 
+# chart_stuffimp(location = "Sheffield", staty = 'tmax')
+# 
+
+
+
+#Extend your code so that it will produce a map of the UK (or Great Britain) showing the locations of the 13 weather stations.
+
+
+test <- do.call(rbind, SpatialData)
+#this is misaligned but can still get location data for each region.
+allspat <- read_table2(test, col_names = FALSE)
+
+
+#replace missing locations in x11, this fixes above
+allspat$X11[is.na(allspat$X11)] <- allspat$X10[is.na(allspat$X11)]
+
+
+# library (leaflet)
+# latitude <- allspat[["X5"]]
+# longitude <- allspat[["X7"]]
+# placeNames <- allspat[["X11"]]
+# leaflet() %>%
+#   setView(lng = -1.47, lat = 52.3, zoom = 6) %>%
+#   addTiles() %>%
+#   addMarkers(lat = latitude,
+#              lng = longitude,
+#              popup = placeNames)
+
+
+# leaflet() %>%
+#   setView(lng = -1.47, lat = 52.3, zoom = 6) %>%
+#   addProviderTiles(providers$Esri.WorldGrayCanvas)
+
+
+#Add to your code so that the colours (or size) of the points on the map represent a summary of one of the weather variables, 
+#for example, maximum August temperature in 1980.
+
+library(colorspace)
+
+#create dataframe of stat, need to do this to take into account of missing values#
+measure = "sun"
+
+if (measure=='af' | measure == 'rain' | measure == 'tmin') {
+  mmf <- 1
+
+} else {
+  mmf <- 6
+
+}
+
+
+distinct_df = all_df %>% distinct(location)
+metric <- filter(all_df, yyyy == 2019 & mm == mmf )
+metric2 <- join(x = distinct_df, y = metric, by = "location"
+                #, all.x = TRUE
+                )
+
+
+#define vars
+latitude <- allspat[["X5"]]
+longitude <- allspat[["X7"]]
+placeNames <- allspat[["X11"]]
+test <- allspat[["X5"]]
+metric3 <- as.numeric(metric2[[measure]])
+
+
+if(measure == 'tmax') {
+  metric3lvl <- cut(as.numeric(metric3), c(-100,10, 12, 14, 16, 18, 20, 22, 24, 100), include.lowest = T)
+  calc <- (metric3^3)/300 
+  pal <- 'RdYlGn'
+} else if (measure == "tmin")   {
+  metric3lvl<- cut(as.numeric(metric3), c(-100, -5, -1, 0, 1, 2, 3, 4, 5, 100), include.lowest = T)
+  pal <- 'GnBu'
+  calc <- (metric3^3)
+} else if (measure == "af") {
+  metric3lvl<- cut(as.numeric(metric3), c(0, 3, 6, 8, 10, 12, 15, 100), include.lowest = T)
+  pal <- 'Blues'
+  calc <- metric3^3/150
+} else if (measure == "rain") {
+  metric3lvl<- cut(as.numeric(metric3), c(0, 30, 40, 50, 60, 72, 82, 100), include.lowest = T)
+  pal <- 'Blues'
+  calc <- metric3^2/50
+} else {
+  metric3lvl<- cut(as.numeric(metric3), c(0, 60, 100, 130, 160, 190, 210, 1000), include.lowest = T)
+  pal <- 'RdYlGn'
+  calc <- 1.5*sqrt(metric3)
+}
+
+
+
+#(measure = "tmin")
+
+#else if ( test_expression3) {
+  #statement3
+#} else {
+#  statement4
+#}
+
+#cut(metric3, 10, labels=FALSE) #don't use this method because we want a consistent measure thru the years
+##add colour
+
+# first cut the continuous variable into bins
+# these bins are now factors
+#metric3lvl<- cut(as.numeric(metric3), c(-100,10, 12, 14, 16, 18, 20, 22, 24, 100), include.lowest = T)
+
+# then assign a palette to this using colorFactor
+# in this case it goes from red for the smaller values to yellow and green
+# standard stoplight for bad, good, and best
+beatCol <- colorFactor(palette = pal , metric3lvl, reverse = TRUE)
+beatCol(metric3lvl)
+
+leaflet() %>%
+  setView(lng = -1.47, lat = 52.3, zoom = 6) %>%
+  addTiles() %>%
+  addCircleMarkers(lat = latitude,
+             lng = longitude,
+             popup = placeNames,
+             radius = calc,
+             color = beatCol(metric3lvl),
+             #clusterOptions = markerClusterOptions()
+             #stroke = FALSE,
+             label = metric3,
+             opacity = 100,
+             labelOptions = labelOptions(noHide = TRUE, 
+                                         offset=c(-10,-10),
+                                         textOnly = TRUE,
+                                         style = list(
+                                           "color" = "black",
+                                           "font-family" = "arial",
+                                           "font-style" = "bold",
+                                           #direction = "top",
+                                           "box-shadow" = "2px 2px rgba(0,0,0,0.05)",
+                                           "font-size" = "15px",
+                                           "border-color" = "rgba(0, 0, 0, 0.05)") 
+                                         )
+             )
+
+
+
+
+
+
+
+#create shiny app
+
+
+
+library(shiny)
+library(tidyverse)
+
+
+
+#get summary statistics
+# 
+# install.packages("fBasics")
+# library(fBasics)
+# basicStats(as.numeric(all_df$af))
+
+
+
+
+
+
+
+
+
+
+
+
+
+#2nd try - SUCCESSFUL!
+
+
+
+# Define the user interface
+ui <- fluidPage(
+  titlePanel("Case Study 2 - UK Weather Data"),
+  sidebarLayout(
+    sidebarPanel(
+      
+      # First control: a widget to select the interval type
+      selectInput("Measure", label = "Measure", 
+                  choices = list("Maximum Temperature (Degrees Celcius)" = "tmax", 
+                                 "Minimum Temperature (Degrees Celcius)" = "tmin", 
+                                 "Days of Frost (Days)" = "af",
+                                 "Total Rainfall (Millimeters)" = "rain",
+                                 "Total sunshine duration (Hours)" = "sun"), 
+                  selected = "Maximum Temperature"),
+      
+      sliderInput("year", "Year", min = 1853, 
+                  max = 2020, value = 2019, sep = ""),
+      selectInput(inputId = "month", 
+                  label = "Month of the year", 
+                  choices = list("January" = 1, "February" = 2, "March" = 3, "April" = 4 , "May" = 5, "June"= 6,
+                                 "July"=7, "August" = 8 , "September" = 9, "October" = 10, "Novemeber" = 11, 
+                                 "December" = 12),
+                  selected = 1), # comma before the next widget
+      
+      hr(),
+      
+      #fluidRow(column(3, verbatimTextOutput("value")))
+    ), 
+    # comma before the next widget
+    
+    mainPanel(
+      leafletOutput("map") # Draw the scatter plot
+    )
+  )
+  
+  # No comma after the last command tableOutput()
+)
+
+# Define the "server": where the computations are done/plots generated etc.
+# given the input values (input$intervalType, 
+# input$cpLevel, input$corMethod) from the user interface
+
+server <- function(input, output) {
+
+
+  
+  
+  
+  output$map <- renderLeaflet({
+    
+    
+    #create dataframe of stat, need to do this to take into account of missing values#
+    
+    # if (input$Measure=='af' | input$Measure == 'rain' | input$Measure == 'tmin') {
+    #   mmf <- 1
+    # } else {
+    #   mmf <- 6
+    # }
+    
+    
+    distinct_df = all_df %>% distinct(location)
+    metric <- filter(all_df, yyyy == input$year & mm == input$month )
+    metric2 <- join(x = distinct_df, y = metric, by = "location"
+                    #, all.x = TRUE
+    )
+    
+    #define vars
+    latitude <- allspat[["X5"]]
+    longitude <- allspat[["X7"]]
+    placeNames <- allspat[["X11"]]
+    test <- allspat[["X5"]]
+    metric3 <- as.numeric(metric2[[input$Measure]])
+    
+    
+    if(input$Measure == 'tmax') {
+      metric3lvl <- cut(as.numeric(metric3), c(-100,10, 12, 14, 16, 18, 20, 22, 24, 100), include.lowest = T)
+      calc <- metric3 
+      pal <- 'RdYlGn'
+    } else if (input$Measure == "tmin") {
+      metric3lvl<- cut(as.numeric(metric3), c(-100, -5, -1, 0, 1, 2, 3, 4, 5, 100), include.lowest = T)
+      pal <- 'GnBu'
+      calc <- metric3*2
+    } else if (input$Measure == "af") {
+      metric3lvl<- cut(as.numeric(metric3), c(0, 3, 6, 8, 10, 12, 15, 100), include.lowest = T)
+      pal <- 'Blues'
+      calc <- metric3*2
+    } else if (input$Measure == "rain") {
+      metric3lvl<- cut(as.numeric(metric3), c(0, 30, 40, 50, 60, 72, 82, 1000), include.lowest = T)
+      pal <- 'PRGn'
+      calc <- (metric3)^0.7
+    } else {
+      metric3lvl<- cut(as.numeric(metric3), c(0, 60, 100, 130, 160, 190, 210, 1000), include.lowest = T)
+      pal <- 'RdYlGn'
+      calc <- metric3^0.6
+    }
+  
+
+    beatCol <- colorFactor(palette = pal , metric3lvl, reverse = TRUE)
+    beatCol(metric3lvl)
+    
+    
+    
+    
+    leaflet() %>%
+      setView(lng = -1.47, lat = 52.3, zoom = 6) %>%
+      addTiles() %>%
+      addCircleMarkers(lat = latitude,
+                       lng = longitude,
+                       popup = placeNames,
+                       radius = calc,
+                       color = beatCol(metric3lvl),
+                       #clusterOptions = markerClusterOptions()
+                       #stroke = FALSE,
+                       label = metric3,
+                       opacity = 100,
+                       fillOpacity = 0.4,
+                       labelOptions = labelOptions(noHide = TRUE, 
+                                                   offset=c(0,0),
+                                                   #offset=c(0,0),
+                                                   textOnly = FALSE,
+                                                   style = list(
+                                                     "color" = "black",
+                                                     "font-family" = "arial",
+                                                     "font-style" = "bold",
+                                                     "direction" = "right",
+                                                     "box-shadow" = "2px 2px rgba(0,0,0, 0.02)",
+                                                     "font-size" = "9px",
+                                                     "border-color" = "rgba(0, 0, 0, 0.02)") 
+                       )
+      )
+    
+    
+  })
+  
+  # The code inside renderTable({}) will be re-run each time each time
+  # the correlation method is changed
+  
+  
+  
+}
+
+
+
+
+# Run the application 
+shinyApp(ui = ui, server = server)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##good website for leaflet stuff
+
+
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      textInput("title", "Title", "GDP vs life exp"),
+      numericInput("size", "Point size", 1, 1),
+      checkboxInput("fit", "Add line of best fit", FALSE),
+      radioButtons("color", "Point color",
+                   choices = c("blue", "red", "green", "black")),
+      selectInput("continents", "Continents",
+                  choices = levels(gapminder$continent),
+                  multiple = TRUE,
+                  selected = "Europe"),
+      # Add a slider selector for years to filter
+      sliderInput("years", "Years",
+                  min(gapminder$year), max(gapminder$year),
+                  value = 2019)
+    ),
+    mainPanel(
+      plotOutput("plot")
+    )
+  )
+)
+
+# Define the server logic
+server <- function(input, output) {
+  output$plot <- renderPlot({
+    # Subset the gapminder data by the chosen years
+    data <- subset(gapminder,
+                   continent %in% input$continents &
+                     year >= input$years[1] & year <= input$years[2])
+    
+    p <- ggplot(data, aes(gdpPercap, lifeExp)) +
+      geom_point(size = input$size, col = input$color) +
+      scale_x_log10() +
+      ggtitle(input$title)
+    
+    if (input$fit) {
+      p <- p + geom_smooth(method = "lm")
+    }
+    p
+  })
+}
+
+shinyApp(ui = ui, server = server)
+
+
+
+
+
+
+
+##use all_df, select a year and a variable and display on map above instead of test
+
+
+#not doing this done, but can do it, basically what need to do is create list of the temps or stat above
+
+
+
+# Generalise your mapping code so that the weather variable and month (and/or year) can be changed easily, 
+# thus allowing you to explore any aspect of 
+# spatial variation that you wish.
+
+#finished ----
+
+
+
+# 
+# ###below is my prelim coding ----
+# 
+# sheffielddata <- read_lines(filePaths[i],
+#                             skip_empty_rows = TRUE)
+# 
+# #read data
+# sheffielddata <- read_lines("data/sheffielddata.txt",
+#                           skip_empty_rows = TRUE)
+# 
+# #set triple - to missing
+# sheffielddata <- str_replace_all(sheffielddata, pattern = "---",
+#                 replacement = "NA")
+# 
+# 
+# #remove foreign characters
+# sheffielddata <- str_remove_all(sheffielddata, pattern = "\\*")
+# sheffielddata <- str_remove_all(sheffielddata, pattern = "#")
+# #sheffielddata <- str_trim(sheffielddata)
+# 
+# #make header
+# header <- str_which(sheffielddata, pattern = "yyyy")
+# endLine <- length(sheffielddata)
+# spatinf <- str_which(sheffielddata, pattern = "Location")
+# 
+# 
+# #form data
+# 
+# sheffdataR <- read_table2(sheffielddata[header:endLine])
+# #delete row with second column names
+# sheffdataR <- sheffdataR[-c(1), ]
+# 
+# 
+# #spatialdata?
+# sheff_spat <- str_trim(sheffielddata[spatinf])
+# 
+# #add column for the location
+# 
+# mutate(sheffdataR, location = "Sheffield")
+# 
+# 
+# 

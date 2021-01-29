@@ -1,0 +1,843 @@
+
+##section 12 Importing combining and reshaping data ----
+
+library(tidyverse)
+
+##import csv
+medals <- read_csv("data/RIOolympics.csv")
+
+#import xlsx
+population <- readxl::read_excel("data/population.xlsx")
+head(population)
+
+##import plain text
+flints <- read_table("data/flintsdata.txt")
+head(flints)
+
+#read in online data
+maths <- read_csv("http://www.jeremy-oakley.staff.shef.ac.uk/mas113/maths.csv")
+head(maths)
+
+
+
+##export data
+write_csv(maths, file = "data/myCopyOfMaths.csv")
+
+#download and save file
+download.file(url = "http://www.jeremy-oakley.staff.shef.ac.uk/mas113/maths.csv",
+              destfile = "data/myCopyOfMaths.csv")
+
+
+##working with column names
+#use back ticks, eg
+population$`Country Name`
+
+
+#combining data frames
+population$`Country Code`
+medals$code
+
+#innerjoin
+olympics <- inner_join(medals, population,
+                       by = c("code" = "Country Code"))
+
+head(olympics)
+
+#adding rows
+df1 <- data.frame(x = c(10, 11), y = c(100, 101))
+df2 <- data.frame(x = c(12, 13), y = c(102, 103))
+rbind(df1, df2)
+
+##dataframes from lists
+myList <- list(df1, df1)
+do.call(rbind.data.frame, myList)
+
+#renaming columns
+olympics <- rename(olympics, population2015 = `2015`)
+head(olympics)
+
+
+##reshaping data frames
+#wide to long
+countries <- read_csv("data/populationMultiple.csv")
+countriesLong <- pivot_longer(countries,
+                              cols = -`Country Name`,
+                              names_to = "year",
+                              values_to = "population")
+head(countriesLong)
+
+#long to wide
+countriesWide <- pivot_wider(countriesLong, 
+                             names_from = year,
+                             values_from = population)
+head(countriesWide)
+
+
+##exercises 12.1
+
+
+#IMPORT BREXIT DATA
+
+brexitvotes <- read_csv("data/BrexitVotes.csv")
+education <- read_csv("data/education.csv")
+
+#education note, level 4 and above are qualifications above a level
+
+
+#join these data sets
+
+Brexit <- inner_join(brexitvotes, education,
+                       by = c("Area_Code" = "Area_Code"))
+
+#12.2
+cancer <- readxl::read_excel("data/cancer.xlsx")
+head(cancer)
+
+#wide to long
+
+cancerLong <- pivot_longer(cancer,
+                              cols = everything(),
+                              names_to = "organ",
+                              values_to = "survival_time")
+
+
+##chapter 13 , data handling with dplyr ---- 
+
+#The pipe operator %>% takes whatever the output is from the left
+#hand side, and uses it as the first argument in the function on the
+#next line. In general,
+
+#myfunction(x, y)
+
+#can be written as
+
+#x %>%
+#myfunction(y)
+library(tidyverse)
+
+maths <- read_csv("http://www.jeremy-oakley.staff.shef.ac.uk/mas113/maths.csv")
+
+#ordering [sorting]
+
+maths %>%
+  arrange(score)
+
+
+maths %>%
+  arrange(desc(score))
+
+#filter
+maths %>%
+  filter(start.age == 5)
+
+maths %>%
+  filter(country == "United Kingdom")
+
+
+#viewing and extracting from a column
+maths %>%
+  select(score, country)
+
+
+maths$score
+
+mean(maths$score)
+
+#create new columns
+
+maths$gdp > 17000
+maths <- maths %>%
+  mutate(wealthiest = maths$gdp > 17000)
+
+#computing summaries per group
+maths %>%
+  group_by(continent) %>%
+  summarise(meanscore = mean(score))
+## `summarise()` ungrouping output (override with `.groups` argument)
+
+
+maths %>%
+  group_by(continent, wealthiest) %>%
+  summarise(meanscore = mean(score)) 
+
+#convert to wide
+maths %>%
+  group_by(continent, wealthiest) %>%
+  summarise(meanscore = mean(score)) %>%
+  pivot_wider(names_from = wealthiest, values_from = meanscore)
+
+
+#counting observations
+maths %>%
+count(continent)
+
+
+maths %>%
+  count(continent, start.age)
+
+maths %>%
+  count(continent, start.age) %>%
+  pivot_wider(names_from = start.age, values_from = n)
+
+
+#exercise 13.1
+brexitvotes <- read_csv("data/BrexitVotes.csv")
+education <- read_csv("data/education.csv")
+
+Brexit <- inner_join(brexitvotes, education,
+                     by = c("Area_Code" = "Area_Code"))
+
+#highest percentage remain votes
+
+
+Brexit %>%
+  arrange(desc(Pct_Remain))
+
+#2
+Brexit %>%
+  group_by(Region) %>%
+  summarise(meanscore = mean(Pct_Remain))
+
+#3
+Brexit <- Brexit %>%
+  mutate(majorityRemain = Brexit$Pct_Remain > 50)
+
+Brexit %>%
+  group_by(majorityRemain) %>%
+  summarise(meanscore = mean(level4))
+
+
+
+## Section 18 making plots with ggplot2 ----
+library(tidyverse)
+maths <- read_csv("http://www.jeremy-oakley.staff.shef.ac.uk/mas113/maths.csv") %>%
+  mutate(wealthiest = gdp > 17000)
+
+
+##scatter plot 18.1
+ggplot(data = maths, aes(x = gdp, y = score)) +
+  geom_point(size = 2, alpha = 0.5) +
+  labs(x = "GDP per capita (US$)",
+       y = "Mean PISA mathematics score, 2015")
+
+
+##another scatter plot 
+ggplot(data = maths, aes(x = gdp, y = score)) +
+  geom_point()
+
+##annotate a scatter plot
+ggplot(data = maths, aes(x = gdp, y = score)) +
+  geom_point() +
+  labs(x = "GDP per capita (US$)",
+       y = "Mean PISA mathematics score, 2015") +
+  annotate("point", x = 39899, y = 492,
+           colour = "red", size = 2) +
+  annotate("text", label = "UK", x = 39899,
+           y = 492, colour = "red", 
+           hjust = -0.2, vjust = 1)
+
+#adding a trend
+ggplot(data = maths, aes(x = gdp, y = score)) +
+  geom_point() +
+  labs(x = "GDP per capita (US$)", 
+       y = "Mean PISA mathematics score, 2015") +
+  annotate("point", x = 39899, 
+           y = 492, colour = "red", 
+           size = 2) +
+  annotate("text", label = "UK", 
+           x = 39899, y = 492, 
+           colour = "red", 
+           hjust = -0.2, vjust = 1) +
+  geom_smooth()
+
+
+#to plot linear trend add  method = "lm" to geom_smooth()
+
+ggplot(data = maths,  
+       aes(x = gini, y = score)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(x = "Gini coeffcient", 
+       y = "Mean PISA mathematics score, 2015") 
+
+
+#adding colours - qualative
+ggplot(data = maths, 
+       aes(x = gdp, y = score)) +
+  geom_point(aes(colour = continent)) +
+  labs(x = "GDP per capita (US$)", 
+       y = "Mean PISA mathematics score, 2015")
+
+## add colours quantitative
+
+ggplot(data = maths, 
+       aes(x = gdp, y = score)) +
+  geom_point(aes(colour = start.age)) +
+  labs(x = "GDP per capita (US$)", 
+       y = "Mean PISA mathematics score, 2015")
+
+#convert start age to factor variable so dont use scale
+ggplot(data = maths, 
+       aes(x = gdp, y = score)) +
+  geom_point(aes(colour = factor(start.age))) +
+  labs(x = "GDP per capita (US$)", 
+       y = "Mean PISA mathematics score, 2015")
+
+
+## 18.3 histograms
+ggplot(data = maths, aes(x = score)) + 
+  geom_histogram()
+
+#density
+ggplot(data = maths, aes(x = score, y = ..density..)) + 
+  geom_histogram()
+
+#redraw
+ggplot(data = maths, aes(x = score)) + 
+  geom_histogram(colour = "blue", fill = "white", binwidth = 10) +
+  labs(x = "Mean PISA mathematics score, 2015") +
+  annotate("point", x = 492, y = 0,  size = 4, colour = "red") 
+
+
+#box plots
+ggplot(data = maths, aes(x = continent, y = score)) +
+  geom_boxplot() +
+  labs(y = "Mean PISA mathematics score, 2015")
+
+#change axis
+ggplot(data = maths, aes(y = continent, x = score)) +
+  geom_boxplot() +
+  labs(x = "Mean PISA mathematics score, 2015",
+       y = "") 
+
+#do by diff groups, factoring
+ggplot(data = maths, aes(x = as.factor(start.age), y = score)) +
+  geom_boxplot() +
+  labs(x = "School starting age", 
+       y =  "Mean PISA mathematics score, 2015")
+
+##add observation to box plot
+ggplot(data = maths, aes(x = as.factor(start.age), y = score)) +
+  geom_boxplot() +
+  labs(x = "School starting age", 
+       y =  "Mean PISA mathematics score, 2015") +
+  geom_jitter(width = 0.1)
+
+
+#violin plot
+ggplot(data = maths, aes(x = as.factor(start.age), y = score)) +
+  geom_violin() +
+  labs(x = "School starting age", 
+       y =  "Mean PISA mathematics score, 2015")
+
+
+#global arsthetics
+
+ggplot(data = maths, 
+       aes(x = gini, y = score)) +
+  geom_point(aes(colour = wealthiest)) +
+  labs(x = "Income inequality (Gini coefficient)", 
+       y = "Mean PISA mathematics score, 2015") + 
+  geom_smooth(method = "lm")
+
+
+ggplot(data = maths, 
+       aes(x = gini, y = score, colour = wealthiest)) +
+  geom_point() +
+  labs(x = "Income inequality (Gini coefficient)", 
+       y = "Mean PISA mathematics score, 2015") + 
+  geom_smooth(method = "lm")
+
+#facets
+ggplot(maths, aes(x = gdp, y = score)) + 
+  geom_point() + 
+  facet_grid(cols = vars(start.age))
+
+
+
+#Exercise 18.1
+
+ggplot(data = Brexit,  
+       aes(x = Pct_Remain, y = level4)) +
+  geom_point(aes(colour = Region)) +
+  geom_smooth(method = "lm") +
+  labs(x = "Pct Remain", 
+       y = "Adults with level 4 education") 
+
+#exercise 18.2
+
+ggplot(data = Brexit, aes(x = Pct_Remain)) + 
+  geom_histogram(colour = "blue", fill = "white", binwidth = 10) +
+  labs(x = "Percentage Remain") +
+  annotate("point", x = 49, y = 0,  size = 4, colour = "red") 
+
+
+#what is sheffield value?
+Brexit[ which(Brexit$district=='Sheffield'), ]
+#answer  49
+
+
+#18.3
+
+
+#box plots
+ggplot(data = Brexit, aes(x = Region, y = Pct_Remain)) +
+  geom_boxplot() +
+  labs(y = "Pct Remain")
+
+#change axis
+ggplot(data = Brexit, aes(y = Region, x = Pct_Remain)) +
+  geom_boxplot() +
+  labs(x = "Pct Remain", y="")
+
+
+##scatter
+
+
+
+###CHAPTER 19  presentation of plots ---- 
+
+install.packages("devtools")
+devtools::install_github("OakleyJ/MAS6005")
+
+
+#scatter
+ggplot(mtcars, aes(x = wt, y = mpg)) +
+  geom_point()
+
+##with axis
+ggplot(data = mtcars, aes(x = wt, y = mpg)) +
+  geom_point() +
+  labs(x = "Weight (lb/1000)", y = "Miles / (US) gallon") 
+
+##title and caption
+ggplot(data = mtcars, aes(x = wt, y = mpg)) +
+  geom_point() +
+  labs(x = "Weight (lb/1000)", y = "Miles / (US) gallon",
+       title = "Fuel economy and weight for 32 car models",
+       subtitle = "Heavier cars tend to be less fuel efficient",
+       caption = "Source: Motor Trend (1974)") 
+
+
+library(MAS6005)
+
+
+p1 <- mvscores %>%
+  filter(innings == "first", captain == "yes") %>%
+  ggplot(aes(x = runs))+
+  labs(x = "First innings runs, captain") +
+  geom_histogram()
+
+p2 <- mvscores %>%
+  filter(innings == "first", captain == "no") %>%
+  ggplot(aes(x = runs))+
+  labs(x = "First innings runs, not captain") +
+  geom_histogram()
+
+p3 <- mvscores %>%
+  filter(innings == "second", captain == "yes") %>%
+  ggplot(aes(x = runs))+
+  labs(x = "Second innings runs, captain") +
+  geom_histogram()
+
+p4 <- mvscores %>%
+  filter(innings == "second", captain == "no") %>%
+  ggplot(aes(x = runs))+
+  labs(x = "Second innings runs, not captain") +
+  geom_histogram()
+
+gridExtra::grid.arrange(p1, p2, p3, p4, nrow = 2)
+
+
+#set x values manually so same scale
+
+?ggplot2::xlim
+
+
+#better plot
+ggplot(mvscores, aes(x = runs, y = ..density..))+
+  labs(x = "Runs scored") +
+  geom_histogram() +
+  facet_grid(rows = vars(captain),
+             col = vars(innings),
+             labeller = label_both)
+
+
+##box plot
+ggplot(mvscores, aes(x = innings, y = runs))+
+  geom_boxplot(aes(color = captain) )
+
+
+
+#exerciise 19.1 improve this plot
+ggplot(airquality, aes(x = Temp, y = Ozone)) +
+  geom_point()
+
+#give title, caption, and mark axis
+
+ggplot(airquality, aes(x = Temp, y = Ozone)) +
+  geom_point() +
+  labs(x = "Weight (Celcius)", y = "Ozone",
+       title = "Scatter plot of ozone versus temperature",
+       #subtitle = "Heavier cars tend to be less fuel efficient",
+       caption = "High temperatures show more Ozone") 
+
+## question 2 
+
+library(dplyr)
+library(scales)
+library(ggplot2)
+
+ggplot(MAS6005::medals, aes(x = population, y = gold)) +
+  geom_point() +
+  labs(x = "Log Population size", y = "Number of Golds")  +
+  annotate("point", x = 1371220000, y = 26,
+           colour = "red", size = 2) +
+  annotate("point", x = 1311050527, y = 0,
+           colour = "red", size = 2) +
+  annotate("text", label = "China", x = 1371220000, y = 26,
+         colour = "red",  hjust = 0.8, vjust = -1) +
+  annotate("text", label = "India", x = 1311050527, y = 0,
+           colour = "red",  hjust = 0.8, vjust = -1) +
+  scale_x_continuous(trans='log10',
+                     labels = unit_format(unit = "M", scale = 1e-6)) 
+  #1311050527
+#  xlim(0, 50000000) +
+#  ylim(0, 10)
+
+
+# 3 
+
+
+inequality2 <- inequality %>%
+  arrange(desc(gini))
+
+
+###reorder country so its nice and listed
+
+ineq <- inequality
+ineq$gini
+
+ineq$country <- reorder(ineq$country, ineq$gini)
+ineq$country
+
+colVector <- rep("grey",36)
+colVector[35] <- "red"
+
+ggplot(ineq, aes(y = country, x = gini)) +
+  geom_col(fill = colVector) +
+  labs(x = "Gini coefficient") +
+  theme(axis.title.y=element_blank(),
+        axis.line.y=element_blank()) +
+  theme_classic() +
+  geom_vline(xintercept = c(0.1,0.2,0.3,0.4,0.5,0.6), col="white")
+
+
+
+
+
+#section 14 strings ----
+
+#read in text data
+examTextRaw <- read_lines("data/stat101.txt",
+                          skip_empty_rows = TRUE)
+
+
+
+#find and replace characters in strings
+
+x <- c("red house", "blue car")
+x == "red house"
+
+
+library(stringr)
+
+#finding text
+str_which(examTextRaw, "student")
+
+#14.3.2 Escape characters and regular expressions
+
+str_which(examTextRaw, "\\*")
+
+
+# Replacing or removing text
+
+str_replace_all(examTextRaw, pattern = "--",
+                replacement = "NA")
+
+
+str_remove_all(examTextRaw, pattern = "\\*")
+
+
+#Removing white space at start/end of strings
+str_trim(examTextRaw)
+
+#subsetting strin
+str_sub(examTextRaw[1], start = 1, end = 7)
+
+#making a data frame
+
+
+
+examTextClean <- examTextRaw %>%
+  str_remove_all(pattern = "\\*") %>%
+  str_replace_all(pattern = "--",
+                  replacement = "NA") %>%
+  str_trim()
+
+
+header <- str_which(examTextClean, pattern = "student")
+endLine <- str_which(examTextClean, pattern = "denotes")
+
+
+
+read_table(examTextClean[header:(endLine - 1)])
+
+
+#Section 15 Processing multiple files ---- 
+
+
+#15.1 Repeating a process with a for loop
+for(i in 1:n){
+  
+}
+
+
+examTextRaw <- read_lines("data/stat101.txt")
+
+examTextClean <- examTextRaw %>%
+  str_remove_all(pattern = "\\*") %>%
+  str_replace_all(pattern = "--",
+                  replacement = "NA") %>%
+  str_trim()
+
+header <- str_which(examTextClean, pattern = "student")
+endLine <- str_which(examTextClean, pattern = "denotes")
+
+read_table(examTextClean[header:(endLine - 1)]) %>%
+  mutate(module = "stat101")
+
+
+
+modules <- c("stat101", "stat102")
+
+
+#construct path
+paste0("data/", modules, ".txt")
+
+#15.2.3 Create an empty list to store the results
+moduleResults <- vector(mode = "list", length = length(modules))
+moduleResults
+
+
+
+#use loop
+
+modules <- c("stat101", "stat102")
+filePaths <- paste0("data/", modules, ".txt")
+moduleResults <- vector(mode = "list", length = length(modules))
+
+for(i in 1:length(modules)){
+  examTextRaw <- read_lines(filePaths[i])
+  
+  examTextClean <- examTextRaw %>%
+    str_remove_all(pattern = "\\*") %>%
+    str_replace_all(pattern = "--",
+                    replacement = "NA") %>%
+    str_trim()
+  
+  header <- str_which(examTextClean, pattern = "student")
+  endLine <- str_which(examTextClean, pattern = "denotes")
+  
+  moduleResults[[i]] <- 
+    read_table(examTextClean[header:(endLine - 1)]) %>%
+    mutate(module = modules[i])
+}
+
+
+#15.2.5 Convert the list to a data frame
+
+do.call(rbind.data.frame, moduleResults)
+
+
+
+
+
+###Section 20 Maps with leaflet ----
+library(leaflet)
+
+leaflet() %>%
+  addTiles() %>%
+  setView(lng = -1.473798, 
+          lat = 53.38252, 
+          zoom = 13)
+
+##add different map overlap
+leaflet() %>%
+  setView(lng = -1.473798, lat = 53.38252, zoom = 13) %>%
+  addProviderTiles(providers$Esri.WorldImagery)
+
+
+#indicating points on a map 
+latitude <- c(53.380909, 53.371566)
+longitude <- c(-1.486197, -1.577604)
+placeNames <- c("Hicks Building", "The Sportsman")
+leaflet() %>%
+  setView(lng = -1.525, lat = 53.38, zoom =12) %>%
+  addTiles() %>%
+  addMarkers(lat = latitude,
+             lng = longitude,
+             popup = placeNames)
+
+
+#plotting region boundaries
+leaflet() %>%
+  setView(lng = -1.47, lat = 52.3, zoom = 6) %>%
+  addProviderTiles(providers$Esri.WorldGrayCanvas)
+
+
+
+# 20.3.1 shapefiles
+# Boundary data can be stored in different formats.
+# We will search for a format called a shapefile. 
+# If we try a Google search for “england county boundaries
+# shapefile”, we can find this page at data.gov.uk, and a
+# zip file containing the shapefile can be downloaded from here.
+library(rgdal)
+
+boundaries <- rgdal::readOGR(dsn = "Counties_and_Unitary_Authorities__December_2016__Boundaries-shp",
+                             layer = "Counties_and_Unitary_Authorities__December_2016__Boundaries")
+
+
+str(boundaries@data)
+
+library(rmapshaper)
+simplifiedBoundaries <-rmapshaper::ms_simplify(boundaries)
+
+
+#plotting the boundaries
+leaflet() %>%
+  setView(lng = -1.47, lat = 52.3, zoom = 6) %>%
+  addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
+  addPolygons(data = simplifiedBoundaries,
+              color = "blue",
+              fillOpacity = 0,
+              weight  = 1,
+              popup = ~ctyua16nm)
+
+#using diff colours for regions
+
+country <- rep("blue", 174)
+country[153:174] <- "red"
+
+
+leaflet() %>%
+  setView(lng = -1.47, lat = 52.3, zoom = 6) %>%
+  addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
+  addPolygons(data = simplifiedBoundaries,
+              fillOpacity = 0.05,
+              weight  = 1,
+              popup = ~ctyua16nm,
+              fillColor = country, 
+              color = country)
+
+
+# Section 17 Missing Data ---- 
+
+x <- c(2, 4, NA, 6, NA)
+#test is there's na
+
+is.na(x)
+
+#remove missing values from function
+mean(x, na.rm = TRUE)
+
+mean(na.omit(x))
+
+#omit any row with any missing data
+y <- 11:15
+myData <- data.frame(x, y)
+na.omit(myData)
+
+
+#imputation
+set.seed(123)
+x <- signif(1:10 + rnorm(10), 3)
+x[c(3, 4, 8)] <- NA
+
+
+#impute missings as mean of rest of vals
+
+imputeTS::na_mean(x)
+
+#impute using last observed balue
+imputeTS::na_locf(x)
+
+#interpolate between values
+
+imputeTS::na_interpolation(x)
+
+#using kalman smoother
+imputeTS::na_kalman(x)
+
+
+#17.4 Visualisaing missing data
+imputeTS::ggplot_na_distribution(x)
+
+#impute and display
+imputeTS::ggplot_na_imputations(x,
+                                imputeTS::na_kalman(x))
+
+
+
+#Section 23 ---- 
+
+library(MAS6005)
+library(tidyverse)
+library(shiny)
+
+flintDf <- read_table("C:/Users/T430/GOOGLE~1/00-MAS~1/STATTO~1/EDA/MAS610~1/shiny/flintsdata.txt")
+
+
+cpLevel <- 0.95
+intervalType <- "prediction" 
+
+
+lmFlint <- lm(length ~ breadth, flintDf)
+intervalDf <- cbind(flintDf,
+                    predict(lmFlint,
+                            interval = intervalType,
+                            level = cpLevel))
+
+
+#draw plot
+ggplot(intervalDf, aes(x = breadth, y = length)) +
+  labs(x="flint tool breadth (cm)", y="flint tool length (cm)") +
+  geom_point() +
+  geom_line(aes(y = fit)) +
+  geom_ribbon(aes(ymin = lwr, ymax = upr), 
+              fill = "red", alpha = 0.1) +
+  ylim(3, 6.5)
+
+
+corMethod <- "pearson" 
+cor(flintDf, method = corMethod)
+
+#if we want to do this again but changed the level interval and type of corr, can make it so client can change it
+
+
+#putting code inside an app
+
+# 
+# ui <- fluidPage(# controls and outputs to be specified here
+# )
+# 
+# server <- function(input, output) {
+#   # computations to be done here
+# }
+# 
+# # Run the application 
+# shinyApp(ui = ui, server = server)
+
+
+

@@ -1,0 +1,73 @@
+MAS61004 Case Study 2
+Introduction
+The aim of Case Study 2 is to give you practice in:
+
+downloading and handling datasets that are supplied in non-standard formats;
+thinking about the needs of clients;
+delivering (to a client) some software and documentation.
+You will be working on this case study over 4 weeks. You will be working mainly in your own time, but in each week, there will be a computer lab session covering a topic that will help you. Weekly worksheets will tell you what to do on the case study each week. Your work will not count towards the module assessment, but there will be a feedback session on your work in the final week of Case Study 2.
+
+Background
+Part of England’s National Curriculum for primary schools requires teachers to explain to children about how weather varies in both time and space. A group of teachers, from a nationwide consortium of schools, have come to you asking for help with creating resources that they might use to help their pupils (aged 10-11 years) to explore and understand the relationship between various aspects of the historical UK data available at: https://www.metoffice.gov.uk/research/climate/maps-and-data/historic-station-data. Since your clients are a consortium of schools in England, they have asked you to focus on data from the following locations (which are the weather stations closest to the schools in the consortium): Sheffield, Yeovilton, Durham, Heathrow, Newton Rigg, Cambridge, Bradford, Oxford, Suttonbonington, Waddington, Manston, Shawbury and Ross-on-Wye.
+
+They have asked you to create an interactive website with a selection of buttons and sliders that allow the pupils to explore how weather varies by, for example, spatial location, altitude and/or time (multivariate exploration is not required, but a selection of univariate options is desirable and you can assume that the pupils are familiar with graphs showing changes of a single variable over time). If possible, the teachers would also like the website to provide (automatically) a few simple words of interpretation or explanation about each plot that is created. This feature need not be interactive, but might (for example) be available at the click of a button. All plots and any interpretation should be elegantly displayed so that pupils can print them out and put them into their workbooks for submission at the end of the class. Since the teachers are not statisticians, they will also need a one page instruction sheet that explains what your software does and gives basic tips on getting started with its use.
+
+Client needs and target audience
+Your results will take the form of an interactive application (suitable for delivery via a web server) and the one page instruction sheet for teaching staff. Your interactive application will be produced using R shiny (which you will learn about in weeks 2 and 3 of this case study); you won’t need to know anything about web-severs or web design for this exercise. For details on the statistical knowledge of the users (the children), see this document on the National Curriculum for Key Stage 2 (search for the term “statistics”). Note that averages aren’t taught until Key Stage 3, but your application may refer to ‘typical’ temperatures!
+
+Scope and guidance
+There is potentially a lot you could do, but we are asking you to choose just one or two aspects of the data to showcase. Remember the software you are designing is for use by young children. Your goal is to give them an easy-to-use way to explore and understand how weather varies in space and/or time. In order to choose something suitable, you will need to explore the data for yourself first so don’t try to start coding in shiny until you have got the data in the right format, decided which variables you want your software to illustrate and thought about whether the focus of your software will be space and/or time. Remember, your goal on this module is to produce results that are of the highest standard possible and that really address the needs of your client (in this case, both the children and their teachers). Focus your efforts on your choice of variables to showcase, the elegance and ease of use of your software and the clarity of the teacher instruction sheet.
+
+Group work
+You will work on this case study in groups, though you should attempt each related homework on your own. Each group will prepare a single app and instruction sheet. You are expected to meet (virtually) with your group members once per week. Video calls can be organised through Google calendar: create an event in your calendar, invite your group members, and then a link will be provided for a Google meeting.
+
+Presentation and feedback
+Your group will present their work in the week beginning 25th January. This will be in a video meeting with a staff member. Separate arrangements will be made for distance learning students.
+
+Getting help
+For general R questions, please use the Blackboard discussion boards. For specific advice about your group’s work, you can request a video meeting for your group with a member of staff, using Google calendar.
+
+
+
+IDEAS
+Our historic station data consists of:
+
+Mean daily maximum temperature (tmax)
+Mean daily minimum temperature (tmin)
+Days of air frost (af)
+Total rainfall (rain)
+Total sunshine duration (sun)
+
+want to create an app that has map and charts of each variable
+line chart thru the years
+each variable represented as an icon
+
+to leaflet, add max temp value to circle
+also have a colour 
+
+interesting to do average stats of all time
+for now let's go with month and year
+
+in terms of stats, can take t mean stat, - stat. and the max and min represent extremes[ can take absolute val]
+
+
+CREATE A SLIDER FOR THE YEARS 
+
+make it so if no data, have missing data
+
+
+make this intake more data
+
+title the thing and add the variables and finished.
+
+can do average temperature thru the whole year if wanted.
+
+make it so map is bigger, takes up whole screen
+
+af, rain, sun
+
+
+
+
+
+

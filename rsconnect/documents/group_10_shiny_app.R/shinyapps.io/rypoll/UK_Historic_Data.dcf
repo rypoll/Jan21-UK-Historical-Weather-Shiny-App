@@ -1,0 +1,13 @@
+name: UK_Historic_Data
+title: UK_Historic_Data
+username:
+account: rypoll
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3549379
+bundleId: 4159294
+url: https://rypoll.shinyapps.io/UK_Historic_Data/
+when: 1611961722.43914
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: 00 - Objective.txt|archive/Case Study 2.R|archive/condensed version.R|archive/shiny_app.R
