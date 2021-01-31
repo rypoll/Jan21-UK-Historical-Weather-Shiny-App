@@ -6,6 +6,8 @@ The app looks at ways of displaying historic weather data in the uk - through wh
 
 The remit was to produce an app for children and therefore language and interactivity were important points to consider.
 
-In this application, I made the first tab - the map data.
+In this application, I made the first tab - the interactive map.
+
+If you check it out, be sure to change the months and years and the different variable types (e.g max temperature, days of frost in a month, rainfaill etc). 
 
 Click <a href="https://rypoll.shinyapps.io/UK_Historic_Data/">here</a> to view the shiny app.
